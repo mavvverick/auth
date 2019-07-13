@@ -10,6 +10,7 @@ import (
 	prvd "gitlab.com/go-pher/go-auth/providers"
 )
 
+// FBAccountKitLogin verifies Account kit token and returns access and refresh tokens
 func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUserData) (*auth.UserTokenResponse, error) {
 	var userCreated bool
 
@@ -66,6 +67,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	return &re, err
 }
 
+// RefreshToken returns access token from refresh token
 func (s *Server) RefreshToken(ctx context.Context, in *auth.RefreshTokenInput) (resp *auth.RefreshTokenResponse, err error) {
 	accessToken, err := refresh(s.redis, in)
 	if err != nil {

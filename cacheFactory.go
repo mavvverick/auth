@@ -11,7 +11,6 @@ import (
 )
 
 func getUserFromCache(ctx context.Context, redCli *redis.Client, uid string) ([]interface{}, error) {
-	//TODO: Get user details of the user from cache and return
 	user, err := redCli.HMGet(strings.Join([]string{"u", uid}, ":"), "mgpl", "username", "firstTimeUser", "isBlocked").Result()
 	if err == redis.Nil {
 		fmt.Println("Not Found", err)
@@ -49,7 +48,7 @@ func setUserAccessCode(redCli *redis.Client, pld Pld, accessKey string) {
 	redCli.HSet(strings.Join([]string{"u", pld.Sub}, ":"), pld.Code, accessKey)
 }
 
-func getUserAccessCode(redCli *redis.Client, userId string, code string) (string, error) {
-	accessCode, err := redCli.HGet(strings.Join([]string{"u", userId}, ":"), code).Result()
+func getUserAccessCode(redCli *redis.Client, userID string, code string) (string, error) {
+	accessCode, err := redCli.HGet(strings.Join([]string{"u", userID}, ":"), code).Result()
 	return accessCode, err
 }
