@@ -1,0 +1,32 @@
+syntax = "proto3";
+package auth;
+
+service Auth {
+    rpc FBAccountKitLogin(FBAccountKitUserData) returns (UserTokenResponse){}
+    rpc RefreshToken(RefreshTokenInput) returns (RefreshTokenResponse){}
+}
+
+message FBAccountKitUserData {
+    string token = 1;
+    string androidId = 2;
+    string imeiNumber = 3;
+    string code = 4;
+}
+
+message RefreshTokenInput {
+    string token = 1;
+    string code = 2;
+}
+
+message RefreshTokenResponse {
+    string token = 1;
+}
+
+message UserTokenResponse {
+    string accessToken = 1;
+    string refreshToken = 2;
+    string firstTimeUser = 3;
+    string isProfileComplete = 4;
+    string userCreated = 5;
+
+}
