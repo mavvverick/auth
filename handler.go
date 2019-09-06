@@ -7,7 +7,7 @@ import (
 	"time"
 
 	auth "gitlab.com/go-pher/go-auth/proto"
-	prvd "gitlab.com/go-pher/go-auth/providers"
+	"gitlab.com/go-pher/go-auth/providers/accountkit"
 )
 
 // FBAccountKitLogin verifies Account kit token and returns access and refresh tokens
@@ -15,7 +15,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	var userCreated bool
 
 	// Get the details of user from FB
-	userFromFB, err := prvd.GetDetailsFromFB(in.Token)
+	userFromFB, err := accountkit.GetDetailsFromFB(in.Token)
 	if err != nil {
 		return nil, err
 	}

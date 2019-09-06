@@ -9,14 +9,14 @@ import (
 
 	nano "github.com/matoous/go-nanoid"
 	auth "gitlab.com/go-pher/go-auth/proto"
-	prvd "gitlab.com/go-pher/go-auth/providers"
+	"gitlab.com/go-pher/go-auth/providers/accountkit"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func getOrCreateUser(ctx context.Context, coll *mongo.Collection, in *auth.FBAccountKitUserData, user prvd.Me) (userFromDB User, err error) {
+func getOrCreateUser(ctx context.Context, coll *mongo.Collection, in *auth.FBAccountKitUserData, user accountkit.Me) (userFromDB User, err error) {
 	var unm string
 	newID, _ := nano.Generate(alphabet, 15)
 	// To check whether the username generated, exists in DB

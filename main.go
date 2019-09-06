@@ -60,5 +60,6 @@ func main() {
 	// start the server
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)
+		panic(err)
 	}
 }
