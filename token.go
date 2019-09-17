@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -86,7 +85,6 @@ func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {
 		err = errors.New("Invalid token, access key missing")
 		return "", err
 	}
-
 	// Get access code of user from cache
 	userAccessCode, err := getUserAccessCode(redis, mapPayload["sub"].(string), mapPayload["code"].(string))
 	if userAccessCode != mapDecData["jti"].(string) {
@@ -134,6 +132,7 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 		IssuedAt: jwt.NewNumericDate(time.Now()),
 		Expiry:   jwt.NewNumericDate(time.Now().Add(tokenExpHours)),
 		ID:       accessKey,
+		//Audience: jwt.Audience{"playy"},
 	}
 
 	// Claims Payload struct containing all the data.
@@ -199,7 +198,7 @@ func getPublicKey() interface{} {
 	}
 
 	key := set.Keys[0]
-	fmt.Println(key.KeyID())
+	// fmt.Println(key.KeyID())
 	pubKey, err := key.Materialize()
 	// fmt.Println("key", pubKey)
 	return pubKey

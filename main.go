@@ -1,28 +1,27 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/joho/godotenv/autoload"
 	pr "gitlab.com/go-pher/go-auth/proto"
-	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 )
 
 // Server is a struct for grpc server, and contains various DB objects
 type Server struct {
-	coll  *mongo.Collection
+	db    *gorm.DB
 	redis *redis.Client
 }
 
 func main() {
 	// Context with timeout
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	// ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	// Create a listener on TCP port 60061
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 60061))
@@ -30,14 +29,13 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// Mongo DB connection
-	clientMongo, err := ConnectMongo(ctx)
+	// MySQL connection
+	clientSQL, err := ConnectSQL()
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 		panic(err)
 	}
-	defer clientMongo.Disconnect(ctx)
-	coll := clientMongo.Database("dev").Collection("users")
+	defer clientSQL.Close()
 
 	// Redis connection
 	clientRedis, err := ConnectRedis()
@@ -49,7 +47,7 @@ func main() {
 
 	// Intialize Server strcut with both DB objects
 	s := Server{
-		coll:  coll,
+		db:    clientSQL,
 		redis: clientRedis,
 	}
 

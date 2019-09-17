@@ -23,7 +23,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	currTime := time.Now()
 
 	// Create/Get user
-	userFromDB, err := getOrCreateUser(ctx, s.coll, in, userFromFB)
+	userFromDB, err := getOrCreateUser(ctx, s.db, in, userFromFB)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	}
 
 	// Get details of the user from cache
-	userFromCache, err := getUserFromCache(ctx, s.redis, userFromDB.UserID)
+	userFromCache, err := getUserFromCache(ctx, s.redis, userFromDB.ID)
 	if userFromCache[0] == nil || userFromCache[3] == nil {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, userFromDB)
@@ -42,7 +42,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 
 	// Create payload struct for token generation.
 	payload := Pld{
-		Sub:      userFromDB.UserID,
+		Sub:      userFromDB.ID,
 		Username: userFromDB.Username,
 		Code:     in.Code,
 		Provider: "fbAccountKit",
@@ -58,7 +58,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	re := auth.UserTokenResponse{
 		AccessToken:       tokens[0],
 		RefreshToken:      tokens[1],
-		UserCreated:       strings.Join([]string{strconv.FormatBool(userCreated), userFromDB.UserID}, ":"),
+		UserCreated:       strings.Join([]string{strconv.FormatBool(userCreated), userFromDB.ID}, ":"),
 		FirstTimeUser:     "false",
 		IsProfileComplete: "false",
 	}
