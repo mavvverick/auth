@@ -5,12 +5,14 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
-	"errors"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/go-redis/redis"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -45,18 +47,18 @@ func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {
 	// Verify Refresh Token.
 	refTok, err := jose.ParseEncrypted(in.Token)
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	privateKey, err := getPrivateKey()
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	// Decrypt the token.
 	decrypted, err := refTok.Decrypt(privateKey)
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	// Get the decrypted data in a Map.
@@ -73,23 +75,18 @@ func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {
 
 	// Check for sanity of the token data and payload
 	if time.Now().After(exp) {
-		err = errors.New("Token Expired")
-		return "", err
+		return "", status.Error(codes.Unauthenticated, "Token Expired")
 	} else if mapPayload["code"] == nil {
-		err = errors.New("Invalid token, client code missing")
-		return "", err
+		return "", status.Error(codes.Unauthenticated, "Invalid token, client code missing")
 	} else if mapPayload["code"] != in.Code {
-		err = errors.New("Request made from invalid client")
-		return "", err
+		return "", status.Error(codes.Unauthenticated, "Request made from invalid client")
 	} else if mapDecData["jti"] == nil {
-		err = errors.New("Invalid token, access key missing")
-		return "", err
+		return "", status.Error(codes.Unauthenticated, "Invalid token, access key missing")
 	}
 	// Get access code of user from cache
 	userAccessCode, err := getUserAccessCode(redis, mapPayload["sub"].(string), mapPayload["code"].(string))
 	if userAccessCode != mapDecData["jti"].(string) {
-		err = errors.New("User already has active session on other device, logout and try again")
-		return "", err
+		return "", status.Error(codes.Unauthenticated, "User already has active session on other device, logout and try again")
 	}
 
 	// Payload struct for token generation
@@ -109,7 +106,7 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 	// Get the private key for signing.
 	privateKey, err := getPrivateKey()
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	// Key ID for token header
@@ -155,7 +152,7 @@ func getJWEToken(clPay Pld, accessKey string) (string, error) {
 		jose.Recipient{Algorithm: jose.RSA_OAEP, Key: getPublicKey()},
 		(&jose.EncrypterOptions{}).WithType("JWE"))
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	// Payload struct for refresh token excryption
@@ -175,7 +172,7 @@ func getJWEToken(clPay Pld, accessKey string) (string, error) {
 	// Encryt the message
 	object, err := encrypter.Encrypt(plaintext)
 	if err != nil {
-		return "", err
+		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
 	// Get the JWE token in string form
