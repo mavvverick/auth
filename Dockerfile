@@ -1,8 +1,6 @@
 # Stage 1
 FROM golang:1.13.0-alpine3.10 as builder
 
-ARG BUILD_TOKEN
-
 # Add git
 RUN apk update && \
     apk add git && \
@@ -12,11 +10,14 @@ RUN apk update && \
 
 RUN mkdir $GOPATH/src/gitlab.com
 RUN mkdir $GOPATH/src/gitlab.com/go-pher
-RUN git clone https://oauth2:$BUILD_TOKEN@gitlab.com/go-pher/go-auth.git $GOPATH/src/gitlab.com/go-pher/go-auth
+RUN mkdir $GOPATH/src/gitlab.com/go-pher/go-auth
+
+ADD . $GOPATH/src/gitlab.com/go-pher/go-auth/
+#RUN git clone https://oauth2:$BUILD_TOKEN@gitlab.com/go-pher/go-auth.git $GOPATH/src/gitlab.com/go-pher/go-auth
 
 WORKDIR $GOPATH/src/gitlab.com/go-pher/go-auth
 
-RUN echo $GOPATH
+#RUN echo $GOPATH
 
 RUN go get ./
 
