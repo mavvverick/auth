@@ -47,6 +47,6 @@ func ConnectSQL() (*gorm.DB, error) {
 	db, err := gorm.Open("mysql", dbSource)
 	db.AutoMigrate(&User{}, &Provider{})
 	db.Model(&Provider{}).AddForeignKey("userId", "Users(id)", "CASCADE", "CASCADE")
-	db.LogMode(true)
+	// db.LogMode(true)
 	return db, err
 }

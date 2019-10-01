@@ -43,7 +43,7 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 	// Create payload struct for token generation.
 	payload := Pld{
 		Sub:      userFromDB.ID,
-		Username: userFromDB.Username,
+		Username: userFromDB.PhoneNumber,
 		Code:     in.Code,
 		Provider: "fbAccountKit",
 	}

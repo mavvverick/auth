@@ -104,10 +104,10 @@ func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {
 func getJWTToken(clPay Pld, accessKey string) (string, error) {
 	tokenOptions := getTokenOptions()
 	// Get the private key for signing.
-	privateKey, err := getPrivateKey()
-	if err != nil {
-		return "", status.Error(codes.Internal, "Internal Error. Contact Support")
-	}
+	// privateKey, err := getPrivateKey()
+	// if err != nil {
+	// 	return "", status.Error(codes.Internal, "Internal Error. Contact Support")
+	// }
 
 	// Key ID for token header
 	var kid jose.HeaderKey
@@ -116,7 +116,7 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 
 	// Create new signer with JWT type.
 	sig, _ := jose.NewSigner(
-		jose.SigningKey{Algorithm: jose.RS256, Key: privateKey},
+		jose.SigningKey{Algorithm: jose.HS256, Key: getSharedKey()},
 		(&jose.SignerOptions{}).WithType("JWT").WithHeader(kid, key))
 
 	// Set Token expiry.
@@ -189,6 +189,20 @@ func getAccessKey() string {
 
 func getPublicKey() interface{} {
 	pub := os.Getenv("CERT_PUB")
+	set, err := jwk.ParseString(pub)
+	if err != nil {
+		panic(err)
+	}
+
+	key := set.Keys[0]
+	// fmt.Println(key.KeyID())
+	pubKey, err := key.Materialize()
+	// fmt.Println("key", pubKey)
+	return pubKey
+}
+
+func getSharedKey() interface{} {
+	pub := os.Getenv("SHARED_KEY")
 	set, err := jwk.ParseString(pub)
 	if err != nil {
 		panic(err)
