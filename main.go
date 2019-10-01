@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
@@ -28,6 +29,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	time.Sleep(5 * time.Second)
+	// Print the IP of the POD
+	// cmd, err := exec.Command("curl", "ifconfig.co").Output()
+	// fmt.Println("OUTPUT IP---", string(cmd))
 
 	// MySQL connection
 	clientSQL, err := ConnectSQL()
