@@ -12,6 +12,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	pr "gitlab.com/go-pher/go-auth/proto"
 	"google.golang.org/grpc"
+	health "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 // Server is a struct for grpc server, and contains various DB objects
@@ -60,6 +61,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	// attach the Ping service to the server
 	pr.RegisterAuthServer(grpcServer, &s)
+	health.RegisterHealthServer(grpcServer, s)
 	// start the server
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)

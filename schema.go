@@ -10,6 +10,7 @@ type Pld struct {
 	Username string `json:"username,omitempty"`
 	Code     string `json:"code,omitempty"`
 	Provider string `json:"provider,omitempty"`
+	ACL      string `json:"acl,omitempty"`
 }
 
 // ClPld struct is used for access token data

@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -95,6 +96,7 @@ func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {
 		mapPayload["username"].(string),
 		mapPayload["code"].(string),
 		mapPayload["provider"].(string),
+		mapPayload["acl"].(string),
 	}
 	accessToken, err := getJWTToken(accessPld, mapDecData["jti"].(string))
 	return accessToken, err
@@ -120,8 +122,9 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 		(&jose.SignerOptions{}).WithType("JWT").WithHeader(kid, key))
 
 	// Set Token expiry.
-	tokenExpDays, err := strconv.Atoi(strings.TrimSuffix(tokenOptions["tokenExp"].(string), "d"))
-	tokenExpHours := time.Hour * 24 * time.Duration(tokenExpDays)
+	//tokenExpDays, err := strconv.Atoi(strings.TrimSuffix(tokenOptions["tokenExp"].(string), "d"))
+	// tokenExpHours := time.Hour * 24 * time.Duration(tokenExpDays)
+	tokenExpHours := time.Minute * 5
 
 	// Claims to add in the token.
 	cl := jwt.Claims{
@@ -132,6 +135,7 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 		//Audience: jwt.Audience{"playy"},
 	}
 
+	fmt.Println("clPay--", clPay)
 	// Claims Payload struct containing all the data.
 	clPld := ClPld{
 		clPay,

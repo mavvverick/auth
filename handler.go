@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	auth "gitlab.com/go-pher/go-auth/proto"
 	"gitlab.com/go-pher/go-auth/providers/accountkit"
+	health "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 // FBAccountKitLogin verifies Account kit token and returns access and refresh tokens
@@ -35,17 +37,20 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 
 	// Get details of the user from cache
 	userFromCache, err := getUserFromCache(ctx, s.redis, userFromDB.ID)
+	fmt.Println("CACHE--", userFromCache)
 	if userFromCache[0] == nil || userFromCache[3] == nil {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, userFromDB)
 	}
 
+	fmt.Println("ACL---", userFromDB.ACL)
 	// Create payload struct for token generation.
 	payload := Pld{
 		Sub:      userFromDB.ID,
 		Username: userFromDB.PhoneNumber,
 		Code:     in.Code,
 		Provider: "fbAccountKit",
+		ACL:      strconv.Itoa(userFromDB.ACL),
 	}
 
 	// Get Access and Refresh tokens for the user
@@ -77,4 +82,17 @@ func (s *Server) RefreshToken(ctx context.Context, in *auth.RefreshTokenInput) (
 		Token: accessToken,
 	}
 	return &res, err
+}
+
+// Check handler is for health checking the gRPC service
+func (s Server) Check(ctx context.Context, in *health.HealthCheckRequest) (*health.HealthCheckResponse, error) {
+	return &health.HealthCheckResponse{
+		Status: 1,
+	}, nil
+}
+
+// Watch handler is for health checking the gRPC service
+func (s Server) Watch(req *health.HealthCheckRequest, srv health.Health_WatchServer) error {
+	// fmt.Println("WATCH")
+	return nil
 }
