@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -37,13 +36,11 @@ func (s *Server) FBAccountKitLogin(ctx context.Context, in *auth.FBAccountKitUse
 
 	// Get details of the user from cache
 	userFromCache, err := getUserFromCache(ctx, s.redis, userFromDB.ID)
-	fmt.Println("CACHE--", userFromCache)
 	if userFromCache[0] == nil || userFromCache[3] == nil {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, userFromDB)
 	}
 
-	fmt.Println("ACL---", userFromDB.ACL)
 	// Create payload struct for token generation.
 	payload := Pld{
 		Sub:      userFromDB.ID,

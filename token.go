@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -135,7 +134,6 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 		//Audience: jwt.Audience{"playy"},
 	}
 
-	fmt.Println("clPay--", clPay)
 	// Claims Payload struct containing all the data.
 	clPld := ClPld{
 		clPay,
