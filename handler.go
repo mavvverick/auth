@@ -83,7 +83,7 @@ func (s *Server) RefreshToken(ctx context.Context, in *auth.RefreshTokenInput) (
 
 // SendOTP sends OTP to the user's phone number
 func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth.SendOTPResponse, err error) {
-	//TODO: 1. Get/Create user from/in the DB
+	//		1. Get/Create user from/in the DB
 	//		2. If OTP exists in cache, send that through the partner
 	//		3. If OTP doesn't exists in cache, generate new OTP, save in cache and send through partner
 	//		4. Send response
@@ -107,15 +107,17 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	} else if err != nil {
 		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
-
+	// fmt.Println("OTP---", otp)
 	//TODO: Send OTP via SMS provider
-	resp.Status = "SENT"
+	resp = &auth.SendOTPResponse{
+		Status: "SENT",
+	}
 	return resp, nil
 }
 
 // VerifyOTP verifies the OTP sent by the user
 func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *auth.VerifyOTPResponse, err error) {
-	//TODO: 1. OTP doesn't exists, send error, expired OTP
+	// 		1. OTP doesn't exists, send error, expired OTP
 	//		2. Check in.OTP with saved OTP
 	//			a. False, wrong OTP, try again
 	//			b. True, next step
@@ -140,7 +142,7 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	// Create payload struct for token generation.
 	payload := Pld{
 		Sub:      user.ID,
-		Username: user.PhoneNumber,
+		Username: user.Username,
 		Code:     "yovo",
 		Provider: "yovo",
 		ACL:      strconv.Itoa(user.ACL),
@@ -152,7 +154,9 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 		return nil, err
 	}
 
-	resp.Token = tokens[0]
+	resp = &auth.VerifyOTPResponse{
+		Token: tokens[0],
+	}
 
 	return resp, nil
 }
