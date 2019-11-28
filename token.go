@@ -1,11 +1,13 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
 	"io/ioutil"
+	"math/big"
 	"os"
 	"strconv"
 	"strings"
@@ -229,4 +231,13 @@ func getTokenOptions() (tokenOptions map[string]interface{}) {
 	tk := []byte(os.Getenv("TOKEN_OPTIONS"))
 	json.Unmarshal(tk, &tokenOptions)
 	return tokenOptions
+}
+
+// getRandNum returns a random number of size four
+func getRandNum() (string, error) {
+	nBig, e := rand.Int(rand.Reader, big.NewInt(8999))
+	if e != nil {
+		return "", e
+	}
+	return strconv.FormatInt(nBig.Int64()+1000, 10), nil
 }

@@ -9,24 +9,25 @@ import (
 	"github.com/jinzhu/gorm"
 	nano "github.com/matoous/go-nanoid"
 	auth "gitlab.com/go-pher/go-auth/proto"
-	"gitlab.com/go-pher/go-auth/providers/accountkit"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.FBAccountKitUserData, user accountkit.Me) (userFromDB User, err error) {
+func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.SendOTPInput) (userFromDB User, err error) {
 	var unm string
 
-	db.Where(&User{PhoneNumber: user.Phone.NationalNumber}).Find(&userFromDB)
+	db.Where(&User{PhoneNumber: in.Phone}).Find(&userFromDB)
 
-	if userFromDB.PhoneNumber == user.Phone.NationalNumber {
+	if userFromDB.PhoneNumber == in.Phone {
 		return userFromDB, err
 	}
 
 	newID, _ := nano.Generate(alphabet, 15)
 	// To check whether the username generated, exists in DB
 	for true {
-		unm = genUsername(user.Phone.NationalNumber)
+		unm = genUsername(in.Phone)
 		err := db.Where("username = ?", unm).Find(&userFromDB)
 
 		if err != nil {
@@ -36,26 +37,41 @@ func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.FBAccountKitUser
 	}
 	newUser := User{
 		ID:          newID,
-		PhoneNumber: user.Phone.NationalNumber,
-		CountryCode: user.Phone.CountryPrefix,
+		PhoneNumber: in.Phone,
+		CountryCode: "91",
 		Username:    unm,
 	}
-	newProvider := Provider{
-		ID:       user.ID,
-		Provider: "fbAccountKit",
-		UserID:   newID,
-	}
+	// newProvider := Provider{
+	// 	ID:       user.ID,
+	// 	Provider: "fbAccountKit",
+	// 	UserID:   newID,
+	// }
 	err = db.Create(&newUser).Error
 	if err != nil {
 		fmt.Println("ERROR ---------- ", err)
 		return newUser, err
 	}
-	err = db.Create(&newProvider).Error
-	if err != nil {
-		fmt.Println("ERROR ---------- ", err)
-		return newUser, err
-	}
+	// err = db.Create(&newProvider).Error
+	// if err != nil {
+	// 	fmt.Println("ERROR ---------- ", err)
+	// 	return newUser, err
+	// }
 	return newUser, err
+}
+
+func updateAndReturnUser(ctx context.Context, db *gorm.DB, in *auth.VerifyOTPInput) (userFromDB User, err error) {
+	err = db.Where(&User{PhoneNumber: in.Phone}).Find(&userFromDB).Error
+	if err != nil {
+		return userFromDB, status.Error(codes.Internal, "Internal Error. Contact Support")
+	}
+
+	userFromDB.IsActive = true
+
+	err = db.Save(&userFromDB).Error
+	if err != nil {
+		return userFromDB, status.Error(codes.Internal, "Internal Error. Contact Support")
+	}
+	return userFromDB, nil
 }
 
 func genUsername(phn string) string {

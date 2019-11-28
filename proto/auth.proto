@@ -4,6 +4,8 @@ package auth;
 service Auth {
     rpc FBAccountKitLogin(FBAccountKitUserData) returns (UserTokenResponse){}
     rpc RefreshToken(RefreshTokenInput) returns (RefreshTokenResponse){}
+    rpc SendOTP(SendOTPInput) returns (SendOTPResponse){}
+    rpc VerifyOTP(VerifyOTPInput) returns (VerifyOTPResponse){}
 }
 
 message FBAccountKitUserData {
@@ -29,4 +31,24 @@ message UserTokenResponse {
     string isProfileComplete = 4;
     string userCreated = 5;
 
+}
+
+message SendOTPInput {
+    string phone = 1;
+    string androidId = 2;
+    bool resend = 3;
+}
+
+message SendOTPResponse {
+    string status = 1;
+}
+
+message VerifyOTPInput {
+    string phone = 1;
+    string otp = 2;
+    string androidId = 3;
+}
+
+message VerifyOTPResponse {
+    string token = 1;
 }

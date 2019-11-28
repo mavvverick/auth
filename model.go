@@ -9,7 +9,7 @@ type User struct {
 	Username      string     `gorm:"column:username;not null"`
 	FirstTimeUser bool       `gorm:"column:firstTimeUser;DEFAULT:false"`
 	CountryCode   string     `gorm:"column:countryCode;not null"`
-	IsActive      bool       `gorm:"column:isActive;DEFAULT:true"`
+	IsActive      bool       `gorm:"column:isActive;DEFAULT:false"`
 	IsBlocked     bool       `gorm:"column:isBlocked;DEFAULT:false"`
 	ACL           int        `gorm:"column:acl;DEFAULT:0"`
 	Providers     []Provider `gorm:"foreignkey:UserID;association_foreignkey:ID"`

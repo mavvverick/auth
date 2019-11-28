@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-redis/redis"
 )
@@ -36,6 +37,14 @@ func setUserAccessCode(redCli *redis.Client, pld Pld, accessKey string) {
 }
 
 func getUserAccessCode(redCli *redis.Client, userID string, code string) (string, error) {
-	accessCode, err := redCli.HGet(strings.Join([]string{"u", userID}, ":"), code).Result()
-	return accessCode, err
+	return redCli.HGet(strings.Join([]string{"u", userID}, ":"), code).Result()
+	//return accessCode, err
+}
+
+func getUserOTP(redCli *redis.Client, phone string) (string, error) {
+	return redCli.Get(phone).Result()
+}
+
+func setUserOTP(redCli *redis.Client, phone, otp string) {
+	redCli.Set(phone, otp, 35*time.Second)
 }
