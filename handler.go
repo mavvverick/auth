@@ -100,6 +100,7 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	otp, err = getUserOTP(s.redis, in.Phone)
 	if err == redis.Nil {
 		otp, err = getRandNum()
+		otp = "1234"
 		if err != nil {
 			return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
 		}
@@ -134,7 +135,7 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 		return resp, status.Error(codes.InvalidArgument, "Wrong OTP. Try again!")
 	}
 
-	user, err := updateAndReturnUser(ctx, s.db, in)
+	user, ftu, err := updateAndReturnUser(ctx, s.db, in)
 	if err != nil {
 		return resp, err
 	}
@@ -156,6 +157,7 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 
 	resp = &auth.VerifyOTPResponse{
 		Token: tokens[0],
+		Ftu:   ftu,
 	}
 
 	return resp, nil

@@ -34,15 +34,15 @@ func token(redis *redis.Client, payload Pld) ([]string, error) {
 		return []string{""}, err
 	}
 
-	// Create JWE Refresh Token
-	refreshToken, err := getJWEToken(payload, accessKey)
-	if err != nil {
-		return []string{""}, err
-	}
+	// // Create JWE Refresh Token
+	// refreshToken, err := getJWEToken(payload, accessKey)
+	// if err != nil {
+	// 	return []string{""}, err
+	// }
 
 	// Set the Access code for the user in redis
 	setUserAccessCode(redis, payload, accessKey)
-	return []string{accessToken, refreshToken}, err
+	return []string{accessToken}, err
 }
 
 func refresh(redis *redis.Client, in *auth.RefreshTokenInput) (string, error) {

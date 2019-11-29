@@ -7,7 +7,7 @@ type User struct {
 	ID            string     `gorm:"column:id;primary_key;size:20;unique_index:idx_uid_cur"`
 	PhoneNumber   string     `gorm:"column:phoneNumber;not null"`
 	Username      string     `gorm:"column:username;not null"`
-	FirstTimeUser bool       `gorm:"column:firstTimeUser;DEFAULT:false"`
+	FirstTimeUser bool       `gorm:"column:firstTimeUser;DEFAULT:true"`
 	CountryCode   string     `gorm:"column:countryCode;not null"`
 	IsActive      bool       `gorm:"column:isActive;DEFAULT:false"`
 	IsBlocked     bool       `gorm:"column:isBlocked;DEFAULT:false"`

@@ -59,19 +59,24 @@ func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.SendOTPInput) (u
 	return newUser, err
 }
 
-func updateAndReturnUser(ctx context.Context, db *gorm.DB, in *auth.VerifyOTPInput) (userFromDB User, err error) {
+func updateAndReturnUser(ctx context.Context, db *gorm.DB, in *auth.VerifyOTPInput) (userFromDB User, ftu bool, err error) {
 	err = db.Where(&User{PhoneNumber: in.Phone}).Find(&userFromDB).Error
 	if err != nil {
-		return userFromDB, status.Error(codes.Internal, "Internal Error. Contact Support")
+		return userFromDB, false, status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
-	userFromDB.IsActive = true
+	ftu = userFromDB.FirstTimeUser
 
-	err = db.Save(&userFromDB).Error
-	if err != nil {
-		return userFromDB, status.Error(codes.Internal, "Internal Error. Contact Support")
+	if !userFromDB.IsActive {
+		userFromDB.IsActive = true
+		userFromDB.FirstTimeUser = false
+		err = db.Save(&userFromDB).Error
+		if err != nil {
+			return userFromDB, false, status.Error(codes.Internal, "Internal Error. Contact Support")
+		}
 	}
-	return userFromDB, nil
+
+	return userFromDB, ftu, nil
 }
 
 func genUsername(phn string) string {
