@@ -140,6 +140,13 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 		return resp, err
 	}
 
+	// Get details of the user from cache
+	userFromCache, err := getUserFromCache(ctx, s.redis, user.ID)
+	if userFromCache[0] == nil || userFromCache[3] == nil {
+		// Update cache of the user.
+		updateUserInCache(ctx, s.redis, user)
+	}
+
 	// Create payload struct for token generation.
 	payload := Pld{
 		Sub:      user.ID,
