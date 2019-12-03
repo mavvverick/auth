@@ -100,7 +100,6 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	otp, err = getUserOTP(s.redis, in.Phone)
 	if err == redis.Nil {
 		otp, err = getRandNum()
-		otp = "1234"
 		if err != nil {
 			return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
 		}
@@ -111,8 +110,9 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	// fmt.Println("OTP---", otp)
 	//TODO: Send OTP via SMS provider
 	resp = &auth.SendOTPResponse{
-		Status: "SENT",
+		Status: otp,
 	}
+
 	return resp, nil
 }
 

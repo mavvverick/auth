@@ -123,9 +123,8 @@ func getJWTToken(clPay Pld, accessKey string) (string, error) {
 		(&jose.SignerOptions{}).WithType("JWT").WithHeader(kid, key))
 
 	// Set Token expiry.
-	//tokenExpDays, err := strconv.Atoi(strings.TrimSuffix(tokenOptions["tokenExp"].(string), "d"))
-	// tokenExpHours := time.Hour * 24 * time.Duration(tokenExpDays)
-	tokenExpHours := time.Minute * 5
+	tokenExpDays, err := strconv.Atoi(strings.TrimSuffix(tokenOptions["tokenExp"].(string), "d"))
+	tokenExpHours := time.Hour * 24 * time.Duration(tokenExpDays)
 
 	// Claims to add in the token.
 	cl := jwt.Claims{
