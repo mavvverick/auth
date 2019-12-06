@@ -19,7 +19,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/teris-io/shortid"
-	auth "gitlab.com/go-pher/go-auth/proto"
+	auth "github.com/YOVO-LABS/auth/proto"
 	jose "gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 )

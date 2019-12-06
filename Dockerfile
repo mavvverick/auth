@@ -10,12 +10,12 @@ RUN apk update && \
 
 RUN mkdir $GOPATH/src/gitlab.com
 RUN mkdir $GOPATH/src/gitlab.com/go-pher
-RUN mkdir $GOPATH/src/gitlab.com/go-pher/go-auth
+RUN mkdir $GOPATH/src/github.com/YOVO-LABS/auth
 
-ADD . $GOPATH/src/gitlab.com/go-pher/go-auth/
-#RUN git clone https://oauth2:$BUILD_TOKEN@gitlab.com/go-pher/go-auth.git $GOPATH/src/gitlab.com/go-pher/go-auth
+ADD . $GOPATH/src/github.com/YOVO-LABS/auth/
+#RUN git clone https://oauth2:$BUILD_TOKEN@github.com/YOVO-LABS/auth.git $GOPATH/src/github.com/YOVO-LABS/auth
 
-WORKDIR $GOPATH/src/gitlab.com/go-pher/go-auth
+WORKDIR $GOPATH/src/github.com/YOVO-LABS/auth
 
 #RUN echo $GOPATH
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	auth "github.com/YOVO-LABS/auth/proto"
 	"github.com/go-redis/redis"
-	auth "gitlab.com/go-pher/go-auth/proto"
 	"google.golang.org/grpc/codes"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"

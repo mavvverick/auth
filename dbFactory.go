@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	nano "github.com/matoous/go-nanoid"
-	auth "gitlab.com/go-pher/go-auth/proto"
+	auth "github.com/YOVO-LABS/auth/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

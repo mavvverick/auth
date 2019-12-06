@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/joho/godotenv/autoload"
-	pr "gitlab.com/go-pher/go-auth/proto"
+	pr "github.com/YOVO-LABS/auth/proto"
 	"google.golang.org/grpc"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 )
