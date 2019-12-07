@@ -9,7 +9,7 @@ RUN apk update && \
     apk add libc-dev
 
 RUN mkdir $GOPATH/src/gitlab.com
-RUN mkdir $GOPATH/src/gitlab.com/go-pher
+RUN mkdir $GOPATH/src/gitlab.com/YOVO-LABS
 RUN mkdir $GOPATH/src/github.com/YOVO-LABS/auth
 
 ADD . $GOPATH/src/github.com/YOVO-LABS/auth/
