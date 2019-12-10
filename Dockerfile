@@ -8,8 +8,8 @@ RUN apk update && \
     apk add gcc && \
     apk add libc-dev
 
-RUN mkdir $GOPATH/src/gitlab.com
-RUN mkdir $GOPATH/src/gitlab.com/YOVO-LABS
+RUN mkdir $GOPATH/src/github.com
+RUN mkdir $GOPATH/src/github.com/YOVO-LABS
 RUN mkdir $GOPATH/src/github.com/YOVO-LABS/auth
 
 ADD . $GOPATH/src/github.com/YOVO-LABS/auth/
@@ -35,8 +35,8 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.0 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
-COPY --from=builder /go/bin/go-auth /
+COPY --from=builder /go/bin/auth /
 
 EXPOSE 60061
 
-CMD ["./go-auth"]
+CMD ["./auth"]
