@@ -47,5 +47,5 @@ func getUserOTP(redCli *redis.Client, phone string) (string, error) {
 }
 
 func setUserOTP(redCli *redis.Client, phone, otp string) {
-	redCli.Set(phone, otp, 35*time.Second)
+	redCli.Set(phone, otp, 5*time.Minute)
 }
