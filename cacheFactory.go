@@ -19,7 +19,7 @@ func getUserFromCache(ctx context.Context, redCli *redis.Client, uid string) ([]
 	return user, err
 }
 
-func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (status string, err error) {
+func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (int64, error) {
 	var m = make(map[string]interface{})
 	m["username"] = user.Username
 	m["phoneNumber"] = user.PhoneNumber
@@ -29,7 +29,7 @@ func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (st
 	m["unmUpdt"] = strconv.FormatBool(user.UsernameUpdated)
 	m["acl"] = user.ACL
 
-	status, err = redCli.HMSet(strings.Join([]string{"u", user.ID}, ":"), m).Result()
+	status, err := redCli.HMSet(strings.Join([]string{"u", user.ID}, ":"), m).Result()
 	return status, err
 }
 
