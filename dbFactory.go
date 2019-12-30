@@ -6,9 +6,9 @@ import (
 	"math/rand"
 	"time"
 
+	auth "github.com/YOVO-LABS/auth/proto"
 	"github.com/jinzhu/gorm"
 	nano "github.com/matoous/go-nanoid"
-	auth "github.com/YOVO-LABS/auth/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -88,7 +88,7 @@ func genUsername(phn string) string {
 func randomChars(length int) string {
 	var result string
 	rand.Seed(time.Now().UnixNano())
-	var characters = "*****#####@@@@@&&&&&"
+	var characters = "*****_____-----"
 	var charactersLength = len(characters)
 	for i := 0; i < length; i++ {
 		result += string(characters[rand.Intn(charactersLength)])

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	auth "github.com/YOVO-LABS/auth/proto"
@@ -123,21 +124,26 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	//			a. False, wrong OTP, try again
 	//			b. True, next step
 	//		3. Generate access token and return
+	var user User
+	user.ID = in.Phone
+	var ftu bool
+	if in.Otp != "true" {
 
-	otp, err := getUserOTP(s.redis, in.Phone)
-	if err == redis.Nil {
-		return resp, status.Error(codes.InvalidArgument, "OTP expired. Resend")
-	} else if err != nil {
-		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
-	}
+		otp, err := getUserOTP(s.redis, in.Phone)
+		if err == redis.Nil {
+			return resp, status.Error(codes.InvalidArgument, "OTP expired. Resend")
+		} else if err != nil {
+			return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
+		}
 
-	if in.Otp != otp {
-		return resp, status.Error(codes.InvalidArgument, "Wrong OTP. Try again!")
-	}
+		if in.Otp != otp {
+			return resp, status.Error(codes.InvalidArgument, "Wrong OTP. Try again!")
+		}
 
-	user, ftu, err := updateAndReturnUser(ctx, s.db, in)
-	if err != nil {
-		return resp, err
+		user, ftu, err = updateAndReturnUser(ctx, s.db, in)
+		if err != nil {
+			return resp, err
+		}
 	}
 
 	// Get details of the user from cache
@@ -145,6 +151,10 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	if userFromCache[0] == nil || userFromCache[3] == nil {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, user)
+	}
+
+	if user.Username == "" {
+		user.Username = fmt.Sprintf("%v", userFromCache[1])
 	}
 
 	// Create payload struct for token generation.
