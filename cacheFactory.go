@@ -11,7 +11,7 @@ import (
 )
 
 func getUserFromCache(ctx context.Context, redCli *redis.Client, uid string) ([]interface{}, error) {
-	user, err := redCli.HMGet(strings.Join([]string{"u", uid}, ":"), "mgpl", "username", "firstTimeUser", "isBlocked", "acl").Result()
+	user, err := redCli.HMGet(strings.Join([]string{"u", uid}, ":"), "yovo", "username", "firstTimeUser", "isBlocked", "acl").Result()
 	if err == redis.Nil {
 		fmt.Println("Not Found", err)
 		panic(err)
