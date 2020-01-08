@@ -37,7 +37,7 @@ func ConnectSQL() (*gorm.DB, error) {
 	password := os.Getenv("sequelize_pass")
 	database := os.Getenv("sequelize_db")
 	dbSource := fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v?charset=utf8&parseTime=True",
+		"%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True",
 		username,
 		password,
 		host,
@@ -45,8 +45,7 @@ func ConnectSQL() (*gorm.DB, error) {
 		database,
 	)
 	db, err := gorm.Open("mysql", dbSource)
-	db.AutoMigrate(&User{}, &Provider{})
-	db.Model(&Provider{}).AddForeignKey("userId", "Users(id)", "CASCADE", "CASCADE")
+	db.AutoMigrate(&User{})
 	// db.LogMode(true)
 	return db, err
 }
