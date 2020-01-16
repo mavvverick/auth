@@ -79,6 +79,16 @@ func updateAndReturnUser(ctx context.Context, db *gorm.DB, in *auth.VerifyOTPInp
 	return userFromDB, ftu, nil
 }
 
+func getUserByID(ctx context.Context, db *gorm.DB, userID string) (User, error) {
+	var user User
+
+	if db.Where(&User{ID: userID}).First(&user).Error != nil {
+		return user, status.Error(codes.InvalidArgument, "UserId doesn't exists")
+	}
+
+	return user, nil
+}
+
 func genUsername(phn string) string {
 	a := []rune(phn)
 	unm := string(a[0:2]) + randomChars(5) + string(a[7:10])

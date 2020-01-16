@@ -13,6 +13,7 @@ type User struct {
 	IsBlocked       bool       `gorm:"column:isBlocked;DEFAULT:false"`
 	UsernameUpdated bool       `gorm:"column:unmUpdt;DEFAULT:false"`
 	ACL             int        `gorm:"column:acl;DEFAULT:0"`
+	Scope           string     `gorm:"column:scope;DEFAULT:'na'"`
 	Providers       []Provider `gorm:"foreignkey:UserID;association_foreignkey:ID"`
 	CreatedAt       time.Time  `gorm:"column:createdAt"`
 	UpdatedAt       time.Time  `gorm:"column:updatedAt"`

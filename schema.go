@@ -9,8 +9,9 @@ type Pld struct {
 	Sub      string `json:"sub,omitempty"`
 	Username string `json:"username,omitempty"`
 	Code     string `json:"code,omitempty"`
-	Provider string `json:"provider,omitempty"`
+	Scope    string `json:"scope,omitempty"`
 	ACL      string `json:"acl,omitempty"`
+	//Provider string `json:"provider,omitempty"`
 }
 
 // ClPld struct is used for access token data

@@ -144,11 +144,16 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 		if err != nil {
 			return resp, err
 		}
+	} else {
+		user, err = getUserByID(ctx, s.db, user.ID)
+		if err != nil {
+			return resp, err
+		}
 	}
 
 	// Get details of the user from cache
 	userFromCache, err := getUserFromCache(ctx, s.redis, user.ID)
-	if userFromCache[0] == nil || userFromCache[3] == nil {
+	if userFromCache[0] == nil || userFromCache[3] == nil || in.Otp == "true" {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, user)
 	}
@@ -162,7 +167,7 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 		Sub:      user.ID,
 		Username: user.Username,
 		Code:     "yovo",
-		Provider: "yovo",
+		Scope:    user.Scope,
 		ACL:      strconv.Itoa(user.ACL),
 	}
 
