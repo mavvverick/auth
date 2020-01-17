@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 )
 
 func getUserFromCache(ctx context.Context, redCli *redis.Client, uid string) ([]interface{}, error) {

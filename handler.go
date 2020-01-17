@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	auth "github.com/YOVO-LABS/auth/proto"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 	"google.golang.org/grpc/codes"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"

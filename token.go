@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/go-redis/redis"
+	auth "github.com/YOVO-LABS/auth/proto"
+	"github.com/go-redis/redis/v7"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/teris-io/shortid"
-	auth "github.com/YOVO-LABS/auth/proto"
 	jose "gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 )
