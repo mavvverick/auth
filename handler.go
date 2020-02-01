@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	auth "github.com/YOVO-LABS/auth/proto"
@@ -153,13 +152,9 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 
 	// Get details of the user from cache
 	userFromCache, err := getUserFromCache(ctx, s.redis, user.ID)
-	if userFromCache[0] == nil || userFromCache[3] == nil || in.Otp == "true" {
+	if err != nil || userFromCache[0] == nil || userFromCache[3] == nil || in.Otp == "true" {
 		// Update cache of the user.
 		updateUserInCache(ctx, s.redis, user)
-	}
-
-	if user.Username == "" {
-		user.Username = fmt.Sprintf("%v", userFromCache[1])
 	}
 
 	// Create payload struct for token generation.

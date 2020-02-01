@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -11,12 +10,7 @@ import (
 )
 
 func getUserFromCache(ctx context.Context, redCli *redis.Client, uid string) ([]interface{}, error) {
-	user, err := redCli.HMGet(strings.Join([]string{"u", uid}, ":"), "yovo", "username", "firstTimeUser", "isBlocked", "acl", "scope").Result()
-	if err == redis.Nil {
-		fmt.Println("Not Found", err)
-		panic(err)
-	}
-	return user, err
+	return redCli.HMGet(strings.Join([]string{"u", uid}, ":"), "yovo", "username", "firstTimeUser", "isBlocked", "acl", "scope").Result()
 }
 
 func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (int64, error) {
