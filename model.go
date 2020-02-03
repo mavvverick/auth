@@ -15,6 +15,9 @@ type User struct {
 	ACL             int        `gorm:"column:acl;DEFAULT:0"`
 	Scope           string     `gorm:"column:scope;DEFAULT:'na'"`
 	Providers       []Provider `gorm:"foreignkey:UserID;association_foreignkey:ID"`
+	RefCode         string     `gorm:"column:refCode"`
+	IsRef           bool       `gorm:"column:isRef;DEFAULT:false"`
+	Coins           int        `gorm:"column:coins;DEFAULT:0;"`
 	CreatedAt       time.Time  `gorm:"column:createdAt"`
 	UpdatedAt       time.Time  `gorm:"column:updatedAt"`
 }

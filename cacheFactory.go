@@ -23,6 +23,7 @@ func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (in
 	m["unmUpdt"] = strconv.FormatBool(user.UsernameUpdated)
 	m["acl"] = user.ACL
 	m["scope"] = user.Scope
+	m["coins"] = user.Coins
 
 	status, err := redCli.HMSet(strings.Join([]string{"u", user.ID}, ":"), m).Result()
 	return status, err
