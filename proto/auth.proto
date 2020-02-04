@@ -52,4 +52,5 @@ message VerifyOTPInput {
 message VerifyOTPResponse {
     string token = 1;
     bool ftu = 2;
+    string userId = 3;
 }

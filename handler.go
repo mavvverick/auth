@@ -173,8 +173,9 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	}
 
 	resp = &auth.VerifyOTPResponse{
-		Token: tokens[0],
-		Ftu:   ftu,
+		Token:  tokens[0],
+		Ftu:    ftu,
+		UserId: user.ID,
 	}
 
 	return resp, nil
