@@ -151,11 +151,11 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	}
 
 	// Get details of the user from cache
-	userFromCache, err := getUserFromCache(ctx, s.redis, user.ID)
-	if err != nil || userFromCache[0] == nil || userFromCache[3] == nil || in.Otp == "true" {
-		// Update cache of the user.
-		updateUserInCache(ctx, s.redis, user)
-	}
+	//userFromCache, err := getUserFromCache(ctx, s.redis, user.ID)
+	//if err != nil || userFromCache[0] == nil || userFromCache[3] == nil || in.Otp == "true" {
+	// Update cache of the user.
+	updateUserInCache(ctx, s.redis, user)
+	//}
 
 	// Create payload struct for token generation.
 	payload := Pld{

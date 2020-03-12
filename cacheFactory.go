@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -24,6 +25,7 @@ func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (in
 	m["acl"] = user.ACL
 	m["scope"] = user.Scope
 	m["coins"] = user.Coins
+	m["inr"] = fmt.Sprintf("%v", user.Inr)
 
 	status, err := redCli.HMSet(strings.Join([]string{"u", user.ID}, ":"), m).Result()
 	return status, err
