@@ -47,3 +47,7 @@ func getUserOTP(redCli *redis.Client, phone string) (string, error) {
 func setUserOTP(redCli *redis.Client, phone, otp string) {
 	redCli.Set(phone, otp, 5*time.Minute)
 }
+
+func isNumberBlocked(redCli *redis.Client, phone string) (bool, error) {
+	return redCli.SIsMember("blockNum", phone).Result()
+}

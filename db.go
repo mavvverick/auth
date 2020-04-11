@@ -45,7 +45,7 @@ func ConnectSQL() (*gorm.DB, error) {
 		database,
 	)
 	db, err := gorm.Open("mysql", dbSource)
-	db.AutoMigrate(&User{})
+	//db.AutoMigrate(&User{})
 	// db.LogMode(true)
 	return db, err
 }

@@ -89,6 +89,14 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	//		4. Send response
 	var otp string
 
+	// 1. Check if number is blocked, return with err
+	isBlocked, err := isNumberBlocked(s.redis, in.Phone)
+	if isBlocked {
+		return resp, status.Error(codes.PermissionDenied, "Account blocked. Contact support!")
+	} else if err != nil {
+		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
+	}
+
 	// Create/Get user
 	if !in.Resend {
 		_, err := getOrCreateUser(ctx, s.db, in)
@@ -123,6 +131,13 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	//			a. False, wrong OTP, try again
 	//			b. True, next step
 	//		3. Generate access token and return
+	isBlocked, err := isNumberBlocked(s.redis, in.Phone)
+	if isBlocked {
+		return resp, status.Error(codes.PermissionDenied, "Account blocked. Contact support!")
+	} else if err != nil {
+		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
+	}
+
 	var user User
 	user.ID = in.Phone
 	var ftu bool

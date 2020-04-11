@@ -20,6 +20,7 @@ type User struct {
 	Scope           string          `gorm:"column:scope;DEFAULT:'na'"`
 	Providers       []Provider      `gorm:"foreignkey:UserID;association_foreignkey:ID"`
 	RefCode         string          `gorm:"column:refCode"`
+	AnmCoinsAdded   bool            `gorm:"column:aca;DEFAULT:false"`
 	IsRef           bool            `gorm:"column:isRef;DEFAULT:false"`
 	Coins           int             `gorm:"column:coins;DEFAULT:0;"`
 	Inr             decimal.Decimal `gorm:"column:inr;not null;DEFAULT:0;" sql:"type:decimal(10,2);"`
