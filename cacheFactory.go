@@ -26,6 +26,7 @@ func updateUserInCache(ctx context.Context, redCli *redis.Client, user User) (in
 	m["scope"] = user.Scope
 	m["coins"] = user.Coins
 	m["inr"] = fmt.Sprintf("%v", user.Inr)
+	m["picUpdt"] = strconv.FormatBool(user.ProfilePicUpdated)
 
 	status, err := redCli.HMSet(strings.Join([]string{"u", user.ID}, ":"), m).Result()
 	return status, err

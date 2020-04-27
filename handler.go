@@ -176,7 +176,7 @@ func (s *Server) VerifyOTP(ctx context.Context, in *auth.VerifyOTPInput) (resp *
 	payload := Pld{
 		Sub:      user.ID,
 		Username: user.Username,
-		Code:     "yovo",
+		Code:     "yovo_1",
 		Scope:    user.Scope,
 		ACL:      strconv.Itoa(user.ACL),
 	}
