@@ -9,20 +9,27 @@ import (
 	auth "github.com/YOVO-LABS/auth/proto"
 	"github.com/jinzhu/gorm"
 	nano "github.com/matoous/go-nanoid"
+	"github.com/openzipkin/zipkin-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.SendOTPInput) (userFromDB User, err error) {
+func getOrCreateUser(ctx context.Context, db *gorm.DB, zt *zipkin.Tracer, in *auth.SendOTPInput) (userFromDB User, err error) {
 	var unm string
 
+	//getUserSpan, _ := zt.StartSpanFromContext(ctx, "getUserFromDB")
+
 	db.Where(&User{PhoneNumber: in.Phone}).Find(&userFromDB)
+
+	//getUserSpan.Finish()
 
 	if userFromDB.PhoneNumber == in.Phone {
 		return userFromDB, err
 	}
+
+	//createUserSpan, _ := zt.StartSpanFromContext(ctx, "createUserInDB")
 
 	newID, _ := nano.Generate(alphabet, 15)
 	// To check whether the username generated, exists in DB
@@ -51,6 +58,8 @@ func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.SendOTPInput) (u
 		fmt.Println("ERROR ---------- ", err)
 		return newUser, err
 	}
+
+	//createUserSpan.Finish()
 	// err = db.Create(&newProvider).Error
 	// if err != nil {
 	// 	fmt.Println("ERROR ---------- ", err)

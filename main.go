@@ -6,11 +6,14 @@ import (
 	"net"
 	"time"
 
+	"github.com/YOVO-LABS/auth/monitoring"
 	pr "github.com/YOVO-LABS/auth/proto"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/openzipkin/zipkin-go"
+	zipkingrpc "github.com/openzipkin/zipkin-go/middleware/grpc"
 	"google.golang.org/grpc"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -19,6 +22,7 @@ import (
 type Server struct {
 	db    *gorm.DB
 	redis *redis.Client
+	ZT    *zipkin.Tracer
 }
 
 func main() {
@@ -51,14 +55,20 @@ func main() {
 	}
 	defer clientRedis.Close()
 
+	zipkinTracer, err := monitoring.NewZipkinTracer()
+	if err != nil {
+		panic(err.Error())
+	}
+
 	// Intialize Server strcut with both DB objects
 	s := Server{
 		db:    clientSQL,
 		redis: clientRedis,
+		ZT:    zipkinTracer,
 	}
 
 	// create a gRPC server object
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.StatsHandler(zipkingrpc.NewServerHandler(zipkinTracer)))
 	// attach the Ping service to the server
 	pr.RegisterAuthServer(grpcServer, &s)
 	health.RegisterHealthServer(grpcServer, s)

@@ -89,6 +89,7 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	//		4. Send response
 	var otp string
 
+	//blkSpan, ctx := s.ZT.StartSpanFromContext(ctx, "isNumberBlocked")
 	// 1. Check if number is blocked, return with err
 	isBlocked, err := isNumberBlocked(s.redis, in.Phone)
 	if isBlocked {
@@ -97,14 +98,16 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
 
+	//blkSpan.Finish()
 	// Create/Get user
 	if !in.Resend {
-		_, err := getOrCreateUser(ctx, s.db, in)
+		_, err := getOrCreateUser(ctx, s.db, s.ZT, in)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	//getOTP, _ := s.ZT.StartSpanFromContext(ctx, "getOTP")
 	otp, err = getUserOTP(s.redis, in.Phone)
 	if err == redis.Nil {
 		otp, err = getRandNum()
@@ -115,6 +118,8 @@ func (s *Server) SendOTP(ctx context.Context, in *auth.SendOTPInput) (resp *auth
 	} else if err != nil {
 		return resp, status.Error(codes.Internal, "Internal Error. Contact Support")
 	}
+
+	//getOTP.Finish()
 	// fmt.Println("OTP---", otp)
 	//TODO: Send OTP via SMS provider
 	resp = &auth.SendOTPResponse{
