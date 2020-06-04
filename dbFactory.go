@@ -28,12 +28,13 @@ func getOrCreateUser(ctx context.Context, db *gorm.DB, in *auth.SendOTPInput) (u
 	// To check whether the username generated, exists in DB
 	for true {
 		unm = genUsername(in.Phone)
-		err := db.Where("username = ?", unm).Find(&userFromDB)
+		db.Where("username = ?", unm).First(&userFromDB)
 
-		if err != nil {
-			break
+		if unm == userFromDB.Username {
+			continue
 		}
-		continue
+
+		break
 	}
 	newUser := User{
 		ID:          newID,
